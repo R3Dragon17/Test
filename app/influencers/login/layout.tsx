@@ -1,12 +1,12 @@
-import './globals.css'
+import { Providers } from '@/store/provider'
+import '../../globals.css'
 import { Inter } from 'next/font/google'
-import { Providers } from '../store/provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'BrandScoutr',
-  description: 'Find your influencer',
+  title: 'Login',
+  description: 'Update, change and analyze your profile',
 }
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
             <Providers>
                 {children}
             </Providers>
-        </body>
+      </body>
     </html>
   )
 }

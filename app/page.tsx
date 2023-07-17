@@ -1,113 +1,73 @@
-import Image from 'next/image'
+'use client'
+import { RootState, useDispatch, useAppSelector } from '@/store'
+import { Header, ProfileDetails } from '@/components'
+import { useEffect, useState } from 'react'
+import { FaSearch, FaSlidersH } from 'react-icons/fa'
+import axios from 'axios'
+import { influencerInterface } from '@/interfaces/influencer'
 
 export default function Home() {
+  const users = [
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}, {platform:'Twitter', followers: 541278, id:3}], id:1},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:2},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:3},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:4},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:5},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}, {platform:'Twitter', followers: 541278, id:3}], id:6},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:7},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:8},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:9},
+    {userName: 'UserName', userNickname:'UserNickname', userEmail:'mymail@email.com', userImage: 'IMG', platforms:[{platform:'Twitch', followers:45171, id:1}, {platform:'Instagram', followers:71203, id:2}], id:10},
+  ]
+  const [country, setCountry] = useState('')
+  const [profiles, setProfiles] = useState<influencerInterface[]>([])
+  const count = useAppSelector(state => state.search)
+
+  const getUserLocation = () => {
+    axios.get('https://geolocation-db.com/json/62d8d690-e7b8-11ed-8c81-cbb990727ab5')
+      .then(response => {
+        const data = response.data
+        console.log(data)
+        return data.country_name
+      })
+      .catch(error => {
+        console.error(error)
+      });
+  }
+
+  const getUsers = () => {
+      axios.get(`http://localhost:5172/api/users/`)
+          .then((data:any) => {
+            if(Array.isArray(data.data)) {
+              setProfiles(data.data)
+            } else { 
+              setProfiles([data.data])
+            }
+          })
+  }
+  useEffect(() => {
+    getUsers()
+  },[])
+
+  console.log(profiles)
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="flex min-h-screen max-w-screen w-full flex-col items-center justify-start bg-bg-primary">
+        <Header />
+        <div className={`flex flex-col w-11/12 max-w-fit min-h-[90vh] items-center justify-start bg-bg-primary mt-20 mb-10 rounded-3xl p-20 pt-5 pb-5 ml-auto mr-auto z-0]`}>
+            <div className={`flex w-full min-w-[220px] p-2 pe-4 ps-4 items-center justify-start bg-txt-primary rounded-full ml-auto mr-auto mb-4`}>
+                <FaSearch className={`text-bg-primary mr-2`}/>
+                <input className={`focus:outline-none bg-inherit text-bg-primary w-full min-w-[200px]`} placeholder='Search'/>
+            </div>
+            <div className={`h-full`}>
+            {Array.isArray(profiles) && profiles.length > 0 && profiles[0] !== null ?  profiles.map(profile => (
+                  <ProfileDetails name={profile.userNickname} country={profile.userCountry} contentType={profile.userContentType} email={profile.userEmail} image={'IMG'} platforms={profile.userPlatforms} id={profile._id} key={profile._id}/>
+              )): (
+                <div className={`flex-col items-center justify-center`}>
+                <p className={`text-2xl mx-auto my-4 text-gray-500 font-semibold text-center`}> No users found </p>
+                {users.map(user => (
+                  <ProfileDetails name={user.userNickname} country='Country' contentType='Content Type' email={user.userEmail} image={'IMG'} platforms={user.platforms} id={1} key={user.id} />
+              ))}</div>)}</div>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   )
 }
